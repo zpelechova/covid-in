@@ -43,7 +43,7 @@ Apify.main(async () => {
 
     console.log(result)
 
-    if (!result.infected || !result.deceased || !result.recovered) {
+    if (!result.activeCases || !result.deaths || !result.recovered) {
         check = true;
     }
     else {
@@ -69,7 +69,7 @@ Apify.main(async () => {
     await browser.close();
     console.log('Done.');
 
-    // if there are no data for TotalInfected, send email, because that means something is wrong
+    // if there are no data for activeCases etc., send email, because that means something is wrong
     const env = await Apify.getEnv();
     if (check) {
         await Apify.call(
