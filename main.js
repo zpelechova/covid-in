@@ -6,9 +6,9 @@ let check = false;
 
 Apify.main(async () => {
 
-    // const kvStore = await Apify.openKeyValueStore('COVID-19-IN');
-    // const dataset = await Apify.openDataset('COVID-19-IN-HISTORY');
-    // const { email } = await Apify.getValue('INPUT');
+    const kvStore = await Apify.openKeyValueStore('COVID-19-IN');
+    const dataset = await Apify.openDataset('COVID-19-IN-HISTORY');
+    const { email } = await Apify.getValue('INPUT');
 
     console.log('Launching Puppeteer...');
     const browser = await Apify.launchPuppeteer();
@@ -52,45 +52,45 @@ Apify.main(async () => {
 
     console.log(result)
 
-    // if (!result.activeCases || !result.deaths || !result.recovered) {
-    //     check = true;
-    // }
-    // else {
-    //     let latest = await kvStore.getValue(LATEST);
-    //     if (!latest) {
-    //         await kvStore.setValue('LATEST', result);
-    //         latest = result;
-    //     }
-    //     delete latest.lastUpdatedAtApify;
-    //     const actual = Object.assign({}, result);
-    //     delete actual.lastUpdatedAtApify;
+    if (!result.activeCases || !result.deaths || !result.recovered) {
+        check = true;
+    }
+    else {
+        let latest = await kvStore.getValue(LATEST);
+        if (!latest) {
+            await kvStore.setValue('LATEST', result);
+            latest = result;
+        }
+        delete latest.lastUpdatedAtApify;
+        const actual = Object.assign({}, result);
+        delete actual.lastUpdatedAtApify;
 
-    //     if (JSON.stringify(latest) !== JSON.stringify(actual)) {
-    //         await dataset.pushData(result);
-    //     }
+        if (JSON.stringify(latest) !== JSON.stringify(actual)) {
+            await dataset.pushData(result);
+        }
 
-    //     await kvStore.setValue('LATEST', result);
-    //     await Apify.pushData(result);
-    // }
+        await kvStore.setValue('LATEST', result);
+        await Apify.pushData(result);
+    }
 
 
-    // console.log('Closing Puppeteer...');
-    // await browser.close();
-    // console.log('Done.');
+    console.log('Closing Puppeteer...');
+    await browser.close();
+    console.log('Done.');
 
-    // // if there are no data for activeCases etc., send email, because that means something is wrong
-    // const env = await Apify.getEnv();
-    // if (check) {
-    //     await Apify.call(
-    //         'apify/send-mail',
-    //         {
-    //             to: email,
-    //             subject: `Covid-19 IN from ${env.startedAt} failed `,
-    //             html: `Hi, ${'<br/>'}
-    //                     <a href="https://my.apify.com/actors/${env.actorId}#/runs/${env.actorRunId}">this</a> 
-    //                     run had 0 TotalInfected, check it out.`,
-    //         },
-    //         { waitSecs: 0 },
-    //     );
-    // };
+    // if there are no data for activeCases etc., send email, because that means something is wrong
+    const env = await Apify.getEnv();
+    if (check) {
+        await Apify.call(
+            'apify/send-mail',
+            {
+                to: email,
+                subject: `Covid-19 IN from ${env.startedAt} failed `,
+                html: `Hi, ${'<br/>'}
+                        <a href="https://my.apify.com/actors/${env.actorId}#/runs/${env.actorRunId}">this</a> 
+                        run had 0 TotalInfected, check it out.`,
+            },
+            { waitSecs: 0 },
+        );
+    };
 });
