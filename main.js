@@ -27,7 +27,8 @@ Apify.main(async () => {
         const activeCases = $('#site-dashboard > div > div > div > div > ul > li.bg-blue > strong').text();
         const recovered = $("#site-dashboard > div > div > div > div > ul > li.bg-green > strong").text();
         const deaths = $('#site-dashboard > div > div > div > div > ul > li.bg-red > strong').text();
-
+        const lastDayTestCount = $('.header-section > div > div > div > div > div > marquee > span').text(); 
+        
         const regionsTableRows = Array.from(document.querySelectorAll("#state-data > div > div > div > div > table > tbody > tr"));
         const regionData = [];
 
@@ -41,6 +42,7 @@ Apify.main(async () => {
             recovered: recovered,
             deaths: deaths,
             totalCases: parseInt(activeCases) + parseInt(recovered) + parseInt(deaths),
+            lastDayTestCount: lastDayTestCount,
             sourceUrl: 'https://www.mohfw.gov.in/',
             lastUpdatedAtApify: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes())).toISOString(),
             readMe: 'https://github.com/zpelechova/covid-in/blob/master/README.md',
@@ -52,7 +54,7 @@ Apify.main(async () => {
 
     console.log(result)
 
-    if (!result.activeCases || !result.deaths || !result.recovered) {
+    if (!result.activeCases || !result.deaths || !result.recovered || !result.lastDayTestCount) {
         check = true;
     }
     else {
